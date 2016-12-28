@@ -12,9 +12,7 @@ return array(
                 'class_name' => '\DHCache\CacheEngineRedis',
                 'required_file' => 'lib/cacheengineredis.php'
             ),
-            'hosts' => array(
-                array("127.0.0.1", "6379")
-            ),
+            'host' => array("127.0.0.1", "6379"),
             'auth' => false,
             'sid' => $_SERVER["DOCUMENT_ROOT"]."#01"
         ),

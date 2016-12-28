@@ -47,7 +47,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
      * @var key - stored key
      */
 
-    private $key='';
+    private $key = '';
 
     /*
      * Constructor
@@ -61,20 +61,19 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
         {
             self::$obRedis = new \Redis();
 
-            if (isset($cacheConfig["hosts"]))
+            if (isset($cacheConfig["host"]))
             {
-                foreach ($cacheConfig["hosts"] as $host)
+                $host = $cacheConfig["host"];
+
+                if (empty($host[0]))
                 {
-                    if(empty($host[0]))
-                    {
-                        $host[0]="127.0.0.1";
-                    }
-                    if(empty($host[1]))
-                    {
-                        $host[0]="6379";
-                    }
-                    self::$isConnected = self::$obRedis->connect($host[0],$host[1]);
+                    $host[0] = "127.0.0.1";
                 }
+                if (empty($host[1]))
+                {
+                    $host[0] = "6379";
+                }
+                self::$isConnected = self::$obRedis->connect($host[0], $host[1]);
 
             }
             else
@@ -82,7 +81,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
                 self::$isConnected = self::$obRedis->connect("127.0.0.1");
             }
 
-            if($cacheConfig["auth"])
+            if ($cacheConfig["auth"])
             {
                 self::$isConnected = self::$obRedis->auth($cacheConfig["auth"]);
             }
@@ -265,7 +264,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
         $arAllVars_ser = self::$obRedis->get($this->key);
 
 
-        $this->read=strlen($arAllVars_ser);
+        $this->read = strlen($arAllVars_ser);
 
         $arAllVars = unserialize($arAllVars_ser);
 
@@ -291,21 +290,23 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     function write($arAllVars, $baseDir, $initDir, $filename, $TTL)
     {
         if (!isset(self::$baseDirVersion[$baseDir]))
-            self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid.$baseDir);
+        {
+            self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+        }
 
         if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '')
         {
-            self::$baseDirVersion[$baseDir] = $this->sid.md5(mt_rand());
-            self::$obRedis->set($this->sid.$baseDir, self::$baseDirVersion[$baseDir]);
+            self::$baseDirVersion[$baseDir] = $this->sid . md5(mt_rand());
+            self::$obRedis->set($this->sid . $baseDir, self::$baseDirVersion[$baseDir]);
         }
 
         if ($initDir !== false)
         {
-            $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir]."|".$initDir);
+            $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
             if ($initDirVersion === false || $initDirVersion === '')
             {
-                $initDirVersion = $this->sid.md5(mt_rand());
-                self::$obRedis->set(self::$baseDirVersion[$baseDir]."|".$initDir, $initDirVersion);
+                $initDirVersion = $this->sid . md5(mt_rand());
+                self::$obRedis->set(self::$baseDirVersion[$baseDir] . "|" . $initDir, $initDirVersion);
             }
         }
         else
@@ -313,11 +314,11 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
             $initDirVersion = "";
         }
 
-        $this->key = self::$baseDirVersion[$baseDir]."|".$initDirVersion."|".$filename;
+        $this->key = self::$baseDirVersion[$baseDir] . "|" . $initDirVersion . "|" . $filename;
 
-        $arAllVars_ser=serialize($arAllVars);
+        $arAllVars_ser = serialize($arAllVars);
 
-        $this->written=strlen($arAllVars_ser);
+        $this->written = strlen($arAllVars_ser);
         self::$obRedis->set($this->key, $arAllVars_ser, $TTL);
     }
 
