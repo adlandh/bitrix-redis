@@ -1,4 +1,4 @@
-Поддержка кэширования через phpredis v 0.1
+Поддержка кэширования через phpredis v 1.0
 (https://github.com/phpredis/phpredis)
 
 Использование:
@@ -8,7 +8,7 @@
 - В секции 'hosts' указать IP и порт вашего сервера redis (можно несколько)
 - В секции 'auth' указать пароль или false, если подключение без пароля
 
-Bitrix Cache with phpredis v 1.1
+Bitrix Cache with phpredis v 1.0
 (https://github.com/phpredis/phpredis)
 
 Usage:
