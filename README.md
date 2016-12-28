@@ -1,4 +1,4 @@
-Поддержка кэширования через phpredis v 1.0
+Поддержка кэширования Битрикс через phpredis v 1.0
 (https://github.com/phpredis/phpredis)
 
 Использование:
