@@ -14,6 +14,7 @@ return array(
             ),
             'host' => array("127.0.0.1", "6379"),
             'auth' => false,
+            'db'   => false,
             'sid' => $_SERVER["DOCUMENT_ROOT"]."#01"
         ),
 

@@ -81,10 +81,16 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
                 self::$isConnected = self::$obRedis->connect("127.0.0.1");
             }
 
-            if ($cacheConfig["auth"])
+            if ($cacheConfig["auth"] && self::$isConnected)
             {
                 self::$isConnected = self::$obRedis->auth($cacheConfig["auth"]);
             }
+
+            if($cacheConfig["db"] && self::$isConnected)
+            {
+                self::$isConnected = self::$obRedis->select($cacheConfig["db"]);
+            }
+
         }
 
         if ($cacheConfig && is_array($cacheConfig))
