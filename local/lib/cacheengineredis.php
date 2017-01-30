@@ -13,7 +13,7 @@ use Bitrix\Main\Config;
 class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\Data\ICacheEngineStat
 {
     /*
-     * @var obMemcached - connection to memcached.
+     * @var obRedis - connection to redis.
      */
     private static $obRedis = null;
 
@@ -117,7 +117,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     }
 
     /*
-     * Returns number of bytes read from memcached or false if there were no read operation
+     * Returns number of bytes read from redis or false if there were no read operation
      *
      * @return integer|false
      */
@@ -128,7 +128,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     }
 
     /*
-     * Returns number of bytes written to memcached or false if there were no write operation
+     * Returns number of bytes written to redis or false if there were no write operation
      *
      * @return integer|false
      */
@@ -150,7 +150,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     }
 
     /*
-     * Returns true if there's connection to memcached
+     * Returns true if there's connection to redis
      *
      * @return boolean
      */
@@ -230,7 +230,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     }
 
     /**
-     * Reads cache from the memcached. Returns true if key value exists, not expired, and successfully read.
+     * Reads cache from the redis. Returns true if key value exists, not expired, and successfully read.
      *
      * @param mixed &$arAllVars Cached result.
      * @param string $baseDir Base cache directory.
@@ -283,7 +283,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     }
 
     /**
-     * Puts cache into the memcached.
+     * Puts cache into the redis.
      *
      * @param mixed $arAllVars Cached result.
      * @param string $baseDir Base cache directory.
