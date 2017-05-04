@@ -61,7 +61,11 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
         {
             self::$obRedis = new \Redis();
 
-            if (isset($cacheConfig["host"]))
+            if (isset($cacheConfig["socket"]))
+            {
+                self::$isConnected = self::$obRedis->connect($cacheConfig["socket"]);
+            }
+            elseif (isset($cacheConfig["host"]))
             {
                 $host = $cacheConfig["host"];
 
