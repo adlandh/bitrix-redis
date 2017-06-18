@@ -14,7 +14,7 @@ return array(
             ),
             /* you can use only 'host' or only 'socket', not both at the same time */
             'host' => array('127.0.0.1', '6379'),
-            'socket' => '/run/redis/redis.sock',
+            // 'socket' => '/run/redis/redis.sock',
             'auth' => false,
             'db'   => false,
             'sid' => $_SERVER["DOCUMENT_ROOT"].'#01'

@@ -1,4 +1,4 @@
-Поддержка кэширования Битрикс через phpredis v 1.2
+Поддержка кэширования Битрикс через phpredis v 1.2.1
 (https://github.com/phpredis/phpredis)
 
 Использование:
@@ -10,7 +10,7 @@
 - В секции 'auth' указать пароль или false, если подключение без пароля
 - В секции 'db' указать номер базы или false, если используется база по умолчанию
 
-Bitrix Cache with phpredis v 1.2
+Bitrix Cache with phpredis v 1.2.1
 (https://github.com/phpredis/phpredis)
 
 Usage:
