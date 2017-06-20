@@ -104,6 +104,10 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
                 $this->sid = $cacheConfig["sid"];
             }
         }
+        if(self::$isConnected)
+        {
+            self::$obRedis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+        }
     }
 
     /*
@@ -174,7 +178,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
      */
     function clean($baseDir, $initDir = false, $filename = false)
     {
-        if (is_object(self::$obRedis))
+        if (self::$isConnected)
         {
             if (strlen($filename))
             {
@@ -246,44 +250,52 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
      */
     function read(&$arAllVars, $baseDir, $initDir, $filename, $TTL)
     {
-        if (!isset(self::$baseDirVersion[$baseDir]))
+        if (self::$isConnected)
         {
-            self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
-        }
+            if (!isset(self::$baseDirVersion[$baseDir]))
+            {
+                self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+            }
 
-        if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '')
-        {
-            return false;
-        }
-
-        if ($initDir !== false)
-        {
-            $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
-            if ($initDirVersion === false || $initDirVersion === '')
+            if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '')
             {
                 return false;
             }
+
+            if ($initDir !== false)
+            {
+                $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
+                if ($initDirVersion === false || $initDirVersion === '')
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                $initDirVersion = "";
+            }
+
+            $this->key = self::$baseDirVersion[$baseDir] . "|" . $initDirVersion . "|" . $filename;
+
+            $arAllVars = self::$obRedis->get($this->key);
+
+            if ($arAllVars === false || $arAllVars === '')
+            {
+                $this->read = 0;
+                return false;
+            }
+            else
+            {
+                $this->read = self::$obRedis->strlen($this->key);
+            }
+
+            return true;
         }
         else
-        {
-            $initDirVersion = "";
-        }
-
-        $this->key = self::$baseDirVersion[$baseDir] . "|" . $initDirVersion . "|" . $filename;
-
-        $arAllVars_ser = self::$obRedis->get($this->key);
-
-
-        $this->read = strlen($arAllVars_ser);
-
-        $arAllVars = unserialize($arAllVars_ser);
-
-        if ($arAllVars === false || $arAllVars === '')
         {
             return false;
         }
 
-        return true;
     }
 
     /**
@@ -299,37 +311,46 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
      */
     function write($arAllVars, $baseDir, $initDir, $filename, $TTL)
     {
-        if (!isset(self::$baseDirVersion[$baseDir]))
+        if (self::$isConnected)
         {
-            self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
-        }
-
-        if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '')
-        {
-            self::$baseDirVersion[$baseDir] = $this->sid . md5(mt_rand());
-            self::$obRedis->set($this->sid . $baseDir, self::$baseDirVersion[$baseDir]);
-        }
-
-        if ($initDir !== false)
-        {
-            $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
-            if ($initDirVersion === false || $initDirVersion === '')
+            if (!isset(self::$baseDirVersion[$baseDir]))
             {
-                $initDirVersion = $this->sid . md5(mt_rand());
-                self::$obRedis->set(self::$baseDirVersion[$baseDir] . "|" . $initDir, $initDirVersion);
+                self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
             }
+
+            if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '')
+            {
+                self::$baseDirVersion[$baseDir] = $this->sid . md5(mt_rand());
+                self::$obRedis->set($this->sid . $baseDir, self::$baseDirVersion[$baseDir]);
+            }
+
+            if ($initDir !== false)
+            {
+                $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
+                if ($initDirVersion === false || $initDirVersion === '')
+                {
+                    $initDirVersion = $this->sid . md5(mt_rand());
+                    self::$obRedis->set(self::$baseDirVersion[$baseDir] . "|" . $initDir, $initDirVersion);
+                }
+            }
+            else
+            {
+                $initDirVersion = "";
+            }
+
+            $this->key = self::$baseDirVersion[$baseDir] . "|" . $initDirVersion . "|" . $filename;
+
+            if(self::$obRedis->set($this->key, $arAllVars, $TTL))
+            {
+                $this->written = self::$obRedis->strlen($this->key);
+            }
+            else
+            {
+                $this->written = 0;
+            }
+
         }
-        else
-        {
-            $initDirVersion = "";
-        }
 
-        $this->key = self::$baseDirVersion[$baseDir] . "|" . $initDirVersion . "|" . $filename;
-
-        $arAllVars_ser = serialize($arAllVars);
-
-        $this->written = strlen($arAllVars_ser);
-        self::$obRedis->set($this->key, $arAllVars_ser, $TTL);
     }
 
     /**
