@@ -1,4 +1,4 @@
-Поддержка кэширования Битрикс через phpredis v 1.3
+Поддержка кэширования Битрикс через phpredis v 1.4
 (https://github.com/phpredis/phpredis)
 
 Использование:
@@ -9,8 +9,9 @@
 - Вместо 'host' можно указать 'socket' -  путь к файлу сокета (при этом 'host' игнорируется)
 - В секции 'auth' указать пароль или false, если подключение без пароля
 - В секции 'db' указать номер базы или false, если используется база по умолчанию
+- В секции 'serializer' указать какой сериализатор использовать. Поддерживается 'php' и 'igbinary'. По умолчанию - 'php' 
 
-Bitrix Cache with phpredis v 1.3
+Bitrix Cache with phpredis v 1.4
 (https://github.com/phpredis/phpredis)
 
 Usage:
@@ -21,3 +22,4 @@ Usage:
 - Instead of 'host', you can specify path to socket in the section 'socket' (section 'host' will be ignored)
 - Specify your password to redis server in the section 'auth' or false if you don't use it.
 - Specify database number in the section 'db' or false if you use default database.
+- Specify serializer in the section 'serialiazer'. 'php' & 'igbinary' is currently supported. Default is 'php' 

@@ -106,7 +106,14 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
         }
         if(self::$isConnected)
         {
-            self::$obRedis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            if(!empty($cacheConfig["serializer"]) && $cacheConfig["serializer"]=='igbinary')
+            {
+                self::$obRedis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_IGBINARY);
+            }
+            else
+            {
+                self::$obRedis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            }
         }
     }
 
