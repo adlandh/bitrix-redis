@@ -17,8 +17,10 @@ return array(
             // 'socket' => '/run/redis/redis.sock',
             'auth' => false,
             'db'   => false,
+            'persistent' => false,
             'serializer' => 'php',
             'sid' => $_SERVER["DOCUMENT_ROOT"].'#01'
+
         ),
 
     ),
