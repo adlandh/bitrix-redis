@@ -1,4 +1,4 @@
-##Поддержка кэширования Битрикс через phpredis v 1.6
+##Поддержка кэширования Битрикс через phpredis v 1.6.1
 (https://github.com/phpredis/phpredis)
 
 ###Использование:
@@ -22,10 +22,10 @@
 - Желательно установить значение в переменную "maxmemory". В противном случае Redis сожрет всю доступную память на сервере.
 - Обязательно переменную "maxmemory-policy" устанавливаем в "allkeys-lru". В этом случае при недостатке памяти Redis будет удалять из базы все старые неиспользуемые ключи.
 
-##Bitrix Cache with phpredis v 1.6
+##Bitrix Cache with phpredis v 1.6.1
 (https://github.com/phpredis/phpredis)
 
-##Usage:
+###Usage:
 
 - Put the file local/lib/cacheengineredis.php into the /local/lib directory of your website
 - Put the file bitrix/.settings_extra.php into the /bitrix directory 
@@ -37,7 +37,7 @@
 - Specify serializer in the section 'serialiazer'. 'php' & 'igbinary' is currently supported. Default is 'php' 
 - You can specify the prefix for all the keys of the cache in the section 'sid'. It's convenient when several web sites use one database in Redis
 
-##How to setup Redis:
+###How to setup Redis:
 
 - It is desirable to increase the value of "tcp_backlog" to decrease connection time with a large number of clients. It's 511 by default.
 Maybe it will be necessary to change the value in /proc/sys/net/core/somaxconn
