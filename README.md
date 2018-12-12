@@ -22,7 +22,7 @@
 - Желательно установить значение в переменную "maxmemory". В противном случае Redis сожрет всю доступную память на сервере.
 - Обязательно переменную "maxmemory-policy" устанавливаем в "allkeys-lru". В этом случае при недостатке памяти Redis будет удалять из базы все старые неиспользуемые ключи.
 
-##Bitrix Cache with phpredis v 1.5
+##Bitrix Cache with phpredis v 1.6
 (https://github.com/phpredis/phpredis)
 
 ##Usage:
