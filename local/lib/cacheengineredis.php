@@ -8,7 +8,7 @@
 
 namespace DHCache;
 
-use Bitrix\Main\Config;
+use Bitrix\Main\Config\Configuration;
 
 class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\Data\ICacheEngineStat
 {
@@ -22,11 +22,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
      */
     private static $isConnected = false;
 
-    /*
-     * @var sid - for using with several websites
-     */
-    private $sid = "BX";
-    /*
+     /*
      * @var read - bytes read
      */
 
@@ -55,7 +51,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
 
     function __construct()
     {
-        $cacheConfig = Config\Configuration::getValue("cache");
+        $cacheConfig = Configuration::getValue("cache");
 
         if (self::$obRedis == null) {
             self::$obRedis = new \Redis();
@@ -102,7 +98,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
 
         if ($cacheConfig && is_array($cacheConfig)) {
             if (!empty($cacheConfig["sid"])) {
-                $this->sid = $cacheConfig["sid"];
+                self::$obRedis->setOption(\Redis::OPT_PREFIX, $cacheConfig["sid"]); ;
             }
         }
         if (self::$isConnected) {
@@ -184,7 +180,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
         if (self::$isConnected) {
             if (strlen($filename)) {
                 if (!isset(self::$baseDirVersion[$baseDir])) {
-                    self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+                    self::$baseDirVersion[$baseDir] = self::$obRedis->get($baseDir);
                 }
 
                 if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '') {
@@ -204,7 +200,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
             } else {
                 if (strlen($initDir)) {
                     if (!isset(self::$baseDirVersion[$baseDir])) {
-                        self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+                        self::$baseDirVersion[$baseDir] = self::$obRedis->get($baseDir);
                     }
 
                     if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '') {
@@ -218,7 +214,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
                         unset(self::$baseDirVersion[$baseDir]);
                     }
 
-                    self::$obRedis->del($this->sid . $baseDir);
+                    self::$obRedis->del($baseDir);
                 }
             }
         }
@@ -239,7 +235,7 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     {
         if (self::$isConnected) {
             if (!isset(self::$baseDirVersion[$baseDir])) {
-                self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+                self::$baseDirVersion[$baseDir] = self::$obRedis->get($baseDir);
             }
 
             if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '') {
@@ -288,18 +284,18 @@ class CacheEngineRedis implements \Bitrix\Main\Data\ICacheEngine, \Bitrix\Main\D
     {
         if (self::$isConnected) {
             if (!isset(self::$baseDirVersion[$baseDir])) {
-                self::$baseDirVersion[$baseDir] = self::$obRedis->get($this->sid . $baseDir);
+                self::$baseDirVersion[$baseDir] = self::$obRedis->get($baseDir);
             }
 
             if (self::$baseDirVersion[$baseDir] === false || self::$baseDirVersion[$baseDir] === '') {
-                self::$baseDirVersion[$baseDir] = $this->sid . md5(mt_rand());
-                self::$obRedis->set($this->sid . $baseDir, self::$baseDirVersion[$baseDir]);
+                self::$baseDirVersion[$baseDir] = md5(mt_rand());
+                self::$obRedis->set($baseDir, self::$baseDirVersion[$baseDir]);
             }
 
             if ($initDir !== false) {
                 $initDirVersion = self::$obRedis->get(self::$baseDirVersion[$baseDir] . "|" . $initDir);
                 if ($initDirVersion === false || $initDirVersion === '') {
-                    $initDirVersion = $this->sid . md5(mt_rand());
+                    $initDirVersion = md5(mt_rand());
                     self::$obRedis->set(self::$baseDirVersion[$baseDir] . "|" . $initDir, $initDirVersion);
                 }
             } else {
